@@ -4,7 +4,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 
 // Import Schema
-const { User, Admin, DrugData } = require('./Schema');
+const { TransactionData, User } = require('./Schema');
 
 dotenv.config();
 const app = express();
