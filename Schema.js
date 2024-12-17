@@ -7,26 +7,28 @@ const transactionDataSchema = new mongoose.Schema({
   paidAmount: { type: Number, required: true, default: 0 },
   transactions: [
     {
-      date: { type: Date, required: true },
-      amount: { type: Number, required: true }
+      date: { type: Date },
+      amount: { type: Number }
     }
   ]
 });
 
-const TransactionData = mongoose.model("TransactionData", transactionDataSchema);
-
-const userSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true, trim: true },
-  password: { type: String, required: true },
-  lastModificationDate: { type: Date, default: Date.now }
-});
-
-userSchema.pre("save", function (next) {
-  if (this.isModified("password")) {
-    this.lastModificationDate = Date.now();
-  }
+transactionDataSchema.pre("save", function (next) {
+  const totalPaidAmount = this.transactions.reduce((total, txn) => total + txn.amount, 0);
+  this.paidAmount = totalPaidAmount;
+  this.balance = this.targetAmount - this.paidAmount;
   next();
 });
+
+const TransactionData = mongoose.model("TransactionData", transactionDataSchema);
+
+
+const userSchema = new mongoose.Schema({
+  username: { type: String, required: true, trim: true },
+  password: { type: String, required: true },
+  TotalAmmountofcollection: { type: Number, required: true, default: 0 }, 
+});
+
 
 const User = mongoose.model("User", userSchema);
 
