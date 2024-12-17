@@ -133,17 +133,16 @@ app.get("/api/total-amount/:username", async (req, res) => {
       if (!allTransactions || allTransactions.length === 0) {
         return res.status(404).json({ error: "No transactions found" });
       }
-  
-      // Format the response as per the given structure
+
       const formattedTransactions = allTransactions.map(transaction => {
         return {
-          id: transaction._id.toString(),  // Convert the MongoDB ObjectId to a string
+          id: transaction._id.toString(), 
           name: transaction.name,
           balance: transaction.balance.toString(),
           targetAmount: transaction.targetAmount.toString(),
           paidAmount: transaction.paidAmount.toString(),
           transactions: transaction.transactions.map(t => ({
-            date: moment(t.date).format("DD/MM/YY"),  // Format the date to DD/MM/YY
+            date: moment(t.date).format("DD/MM/YY"), 
             amount: t.amount.toString()
           }))
         };
@@ -269,7 +268,7 @@ app.post("/create-member", async (req, res) => {
         member.transactions.map((txn) => ({
           id: txn._id, 
           name: member.name,
-          date: txn.date,
+          date: moment(txn.date).format("DD/MM/YY"),
           amount: txn.amount,
         }))
       );
@@ -284,3 +283,4 @@ app.post("/create-member", async (req, res) => {
     }
   });
   
+
