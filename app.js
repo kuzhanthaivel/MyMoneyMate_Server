@@ -4,7 +4,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 
 const { TransactionData, User } = require('./Schema');
-
+const moment = require("moment");
 dotenv.config();
 const app = express();
 app.use(express.json());
@@ -125,7 +125,6 @@ app.get("/api/total-amount/:username", async (req, res) => {
       res.status(500).json({ message: "Internal server error" });
     }
   });
-  
 
   app.get("/get-all-transactions", async (req, res) => {
     try {
@@ -135,11 +134,27 @@ app.get("/api/total-amount/:username", async (req, res) => {
         return res.status(404).json({ error: "No transactions found" });
       }
   
-      res.status(200).json(allTransactions);
+      // Format the response as per the given structure
+      const formattedTransactions = allTransactions.map(transaction => {
+        return {
+          id: transaction._id.toString(),  // Convert the MongoDB ObjectId to a string
+          name: transaction.name,
+          balance: transaction.balance.toString(),
+          targetAmount: transaction.targetAmount.toString(),
+          paidAmount: transaction.paidAmount.toString(),
+          transactions: transaction.transactions.map(t => ({
+            date: moment(t.date).format("DD/MM/YY"),  // Format the date to DD/MM/YY
+            amount: t.amount.toString()
+          }))
+        };
+      });
+  
+      res.status(200).json(formattedTransactions);
     } catch (error) {
       res.status(500).json({ error: "Internal server error", details: error.message });
     }
   });
+  
 
 
   app.get("/get-all-names", async (req, res) => {
