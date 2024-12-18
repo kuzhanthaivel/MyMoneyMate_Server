@@ -134,15 +134,15 @@ app.get("/api/total-amount/:username", async (req, res) => {
         return res.status(404).json({ error: "No transactions found" });
       }
   
-      const formattedTransactions = allTransactions.map((transaction, index) => {
+      const formattedTransactions = allTransactions.map((transaction) => {
         return {
-          id: index + 1, 
+          id: transaction._id.toString(),
           name: transaction.name,
           balance: transaction.balance.toString(),
           targetAmount: transaction.targetAmount.toString(),
           paidAmount: transaction.paidAmount.toString(),
-          transactions: transaction.transactions.map(t => ({
-            date: moment(t.date).format("DD/MM/YY"), 
+          transactions: transaction.transactions.map((t) => ({
+            date: moment(t.date).format("DD/MM/YY"), // Format date
             amount: t.amount.toString()
           }))
         };
@@ -153,6 +153,7 @@ app.get("/api/total-amount/:username", async (req, res) => {
       res.status(500).json({ error: "Internal server error", details: error.message });
     }
   });
+  
   
   
 
@@ -293,4 +294,27 @@ app.post("/create-member", async (req, res) => {
   });
   
   
-
+  app.post("/api/member/delete", async (req, res) => {
+    try {
+      const { id } = req.body; 
+      if (!mongoose.isValidObjectId(id)) {
+        return res.status(400).json({ message: "Invalid ID format" });
+      }
+  
+      const deletedMember = await TransactionData.findByIdAndDelete(id);
+  
+      if (!deletedMember) {
+        return res.status(404).json({ message: "Member not found" });
+      }
+  
+      res.status(200).json({
+        message: "Member deleted successfully",
+        deletedMember,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "Error deleting member",
+        error: error.message,
+      });
+    }
+  });
