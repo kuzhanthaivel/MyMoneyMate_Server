@@ -136,7 +136,7 @@ app.get("/api/total-amount/:username", async (req, res) => {
 
       const formattedTransactions = allTransactions.map(transaction => {
         return {
-          id: transaction._id.toString(), 
+          id: index + 1, 
           name: transaction.name,
           balance: transaction.balance.toString(),
           targetAmount: transaction.targetAmount.toString(),
