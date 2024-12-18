@@ -267,21 +267,30 @@ app.post("/create-member", async (req, res) => {
       const members = await TransactionData.find();
       const allTransactions = members.flatMap((member) =>
         member.transactions.map((txn) => ({
-          id: txn._id, 
+          id: txn._id,
           name: member.name,
-          date: moment(txn.date).format("DD/MM/YY"),
+          date: txn.date, // Keep the original date for sorting
           amount: txn.amount,
         }))
       );
+  
+      // Sort by the original date value
       allTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
   
+      // Format the date after sorting
+      const formattedTransactions = allTransactions.map((txn) => ({
+        ...txn,
+        date: moment(txn.date).format("DD/MM/YY"), // Format for display
+      }));
+  
       res.status(200).json({
-        transactions: allTransactions,
+        transactions: formattedTransactions,
       });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "Failed to fetch transactions" });
     }
   });
+  
   
 
