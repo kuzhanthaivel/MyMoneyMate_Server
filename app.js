@@ -133,8 +133,8 @@ app.get("/api/total-amount/:username", async (req, res) => {
       if (!allTransactions || allTransactions.length === 0) {
         return res.status(404).json({ error: "No transactions found" });
       }
-
-      const formattedTransactions = allTransactions.map(transaction => {
+  
+      const formattedTransactions = allTransactions.map((transaction, index) => {
         return {
           id: index + 1, 
           name: transaction.name,
@@ -153,6 +153,7 @@ app.get("/api/total-amount/:username", async (req, res) => {
       res.status(500).json({ error: "Internal server error", details: error.message });
     }
   });
+  
   
 
 
